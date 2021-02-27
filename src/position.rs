@@ -1,3 +1,6 @@
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+
 #[derive(Hash, Eq, PartialEq, Debug, PartialOrd, Ord, Clone, Copy)]
 pub struct Pos(pub u64);
 
@@ -44,9 +47,13 @@ impl Pos {
             .map(|num: u64| if num == 0 { 15 } else { num - 1 })
             .collect();
 
+        Self::from_permutation(vec) 
+    }
+
+    pub fn from_permutation(input: Vec<u64>) -> Pos {
         let mut acc: Pos = Pos(0);
         for i in 0..16 {
-            acc.0 |= vec[i] << (4 * i);
+            acc.0 |= input[i] << (4 * i);
         }
         acc
     }
@@ -116,4 +123,44 @@ impl Iterator for Neighbors {
 
 pub fn neighbors(pos: Pos) -> Neighbors {
     Neighbors::new(pos, Dir::Up)
+}
+
+
+fn is_permutation_odd(perm: &Vec<u64>) -> bool {
+    let mut cnt = 0;
+    for i in 0..perm.len() {
+        for j in i..perm.len() {
+            if perm[i] > perm[j] {
+                cnt += 1;
+            }
+        }
+    }
+    cnt % 2 == 1
+}
+pub struct Generator {
+    rng: rand::rngs::ThreadRng,
+}
+
+impl Generator {
+    pub fn new() -> Generator {
+        Generator {
+            rng: thread_rng(),
+        }
+    }
+}
+
+impl Iterator for Generator {
+    type Item = Pos;
+
+    fn next(&mut self) -> Option<Pos> {
+        let mut perm: Vec<u64> = (0..16).collect();
+        perm.shuffle(&mut self.rng); 
+
+        let id: Vec<u64> = (0..16).collect();
+
+        if is_permutation_odd(&perm) != is_permutation_odd(&id) {
+            perm.swap(0, 1);
+        }
+        Some(Pos::from_permutation(perm))
+    }
 }

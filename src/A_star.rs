@@ -5,12 +5,7 @@ use std::cmp::Reverse;
 use crate::position::Pos;
 use crate::position::neighbors;
 
-fn f(prev: Pos, curr: Pos, target: Pos, results: &HashMap<Pos, usize>) -> usize {
-    results[&prev] + 1 + curr.manhattan(target)
-}
-
-
-fn make_path_v2(first_middle: Pos, second_middle: Pos, back: &HashMap<Pos, PosData>) -> Vec<Pos> {
+fn make_path(first_middle: Pos, second_middle: Pos, back: &HashMap<Pos, PosData>) -> Vec<Pos> {
     let mut vec1 = vec![first_middle];
 
     while back[vec1.last().unwrap()].prev != *vec1.last().unwrap() {
@@ -34,29 +29,6 @@ fn make_path_v2(first_middle: Pos, second_middle: Pos, back: &HashMap<Pos, PosDa
     }
 }
 
-fn make_path_v1(first_middle: Pos, second_middle: Pos, back: &HashMap<Pos, Pos>) -> Vec<Pos> {
-    let mut vec1 = vec![first_middle];
-
-    while back[vec1.last().unwrap()] != *vec1.last().unwrap() {
-        vec1.push(back[vec1.last().unwrap()]);
-    }
-
-    let mut vec2 = vec![second_middle];
-
-    while back[vec2.last().unwrap()] != *vec2.last().unwrap() {
-        vec2.push(back[vec2.last().unwrap()]);
-    }
-
-    if vec2.last().unwrap() > vec1.last().unwrap() {
-        vec1.reverse();
-        vec1.append(&mut vec2);
-        vec1
-    } else {
-       vec2.reverse();
-       vec2.append(&mut vec1);
-       vec2
-    }
-}
 #[derive(Clone, Copy)]
 struct PosData {
     pub dist: usize,
@@ -98,7 +70,7 @@ pub fn A_star(start: Pos) -> Vec<Pos> {
         if positions_data.contains_key(&pos) {
             let curr_data = positions_data[&pos];
             if curr_data.target != prev_data.target {
-                return make_path_v2(pos, prev, &positions_data);
+                return make_path(pos, prev, &positions_data);
             }
         } else {
             let dist = prev_data.dist + 1;

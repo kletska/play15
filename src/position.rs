@@ -1,5 +1,5 @@
-use rand::seq::SliceRandom;
-use rand::thread_rng;
+use std::fmt;
+use std::fmt::Display;
 
 #[derive(Hash, Eq, PartialEq, Debug, PartialOrd, Ord, Clone, Copy)]
 pub struct Pos(pub u64);
@@ -56,6 +56,37 @@ impl Pos {
             acc.0 |= input[i] << (4 * i);
         }
         acc
+    }
+
+    pub fn to_permutation(self) -> Vec<u64> {
+        let mut res = Vec::new();
+        for i in 0..16 {
+            let val = (self.0 >> (4 * i)) & 15;
+            res.push(val);
+        }
+        res
+    }
+}
+
+impl Display for Pos {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut result: String = String::new();
+
+        for i in 0..4 {
+            for j in 0..4 {
+                let index = 4 * (i * 4 + j);
+                let mut val = (self.0 >> index) & 15;
+                if val == 15 {
+                    val = 0;
+                } else {
+                    val += 1;
+                }
+                result += &val.to_string();
+                result += " ";
+            }
+            result += "\n";
+        }
+        write!(f, "{}", result)
     }
 }
 
@@ -126,7 +157,7 @@ pub fn neighbors(pos: Pos) -> Neighbors {
 }
 
 
-fn is_permutation_odd(perm: &Vec<u64>) -> bool {
+pub fn permutation_sign(perm: &Vec<u64>) -> usize {
     let mut cnt = 0;
     for i in 0..perm.len() {
         for j in i..perm.len() {
@@ -135,32 +166,5 @@ fn is_permutation_odd(perm: &Vec<u64>) -> bool {
             }
         }
     }
-    cnt % 2 == 1
-}
-pub struct Generator {
-    rng: rand::rngs::ThreadRng,
-}
-
-impl Generator {
-    pub fn new() -> Generator {
-        Generator {
-            rng: thread_rng(),
-        }
-    }
-}
-
-impl Iterator for Generator {
-    type Item = Pos;
-
-    fn next(&mut self) -> Option<Pos> {
-        let mut perm: Vec<u64> = (0..16).collect();
-        perm.shuffle(&mut self.rng); 
-
-        let id: Vec<u64> = (0..16).collect();
-
-        if is_permutation_odd(&perm) != is_permutation_odd(&id) {
-            perm.swap(0, 1);
-        }
-        Some(Pos::from_permutation(perm))
-    }
+    cnt % 2
 }

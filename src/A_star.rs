@@ -4,6 +4,7 @@ use std::cmp::Reverse;
 
 use crate::position::Pos;
 use crate::position::neighbors;
+use crate::position::permutation_sign;
 
 fn make_path(first_middle: Pos, second_middle: Pos, back: &HashMap<Pos, PosData>) -> Vec<Pos> {
     let mut vec1 = vec![first_middle];
@@ -37,33 +38,48 @@ struct PosData {
 }
 
 pub fn A_star(start: Pos) -> Vec<Pos> {
-    const END: Pos = Pos(18364758544493064720);
+    let mut end: Pos = Pos(0xfedcba9876543210);// 18364758544493064720
+
+    if start == end {
+        return vec![start];
+    }
+
+    let start_sing = permutation_sign(&start.to_permutation());
+    let end_sign = permutation_sign(&end.to_permutation());
+    if start_sing == end_sign {
+        end = Pos(0xefdcba9876543210);
+    }
+
+    if start == end {
+        return vec![start];
+    }
+    
 
     let mut positions_data: HashMap<Pos, PosData> = HashMap::new(); // dist, target
     positions_data.insert(start, PosData {
         dist: 0,
         prev: start,
-        target: END,
+        target: end,
     });
-    positions_data.insert(END, PosData {
+    positions_data.insert(end, PosData {
         dist: 0,
-        prev: END,
+        prev: end,
         target: start,
     });
 
     let mut queue: BinaryHeap<(Reverse<usize>, Pos, Pos)> = BinaryHeap::new();
 
     for start_neib in neighbors(start) {
-        let dist = 1 + start_neib.manhattan(END);
+        let dist = 1 + start_neib.manhattan(end);
         queue.push((Reverse(dist), start_neib, start));
     }
     
-    for end_neib in neighbors(END) {
+    for end_neib in neighbors(end) {
         let dist = 1 + end_neib.manhattan(start);
-        queue.push((Reverse(dist), end_neib, END));
+        queue.push((Reverse(dist), end_neib, end));
     }
 
-    while let Some((Reverse(dist), pos, prev)) = queue.pop() {
+    while let Some((_, pos, prev)) = queue.pop() {
 
         let prev_data = positions_data[&prev];
 

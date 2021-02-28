@@ -8,6 +8,7 @@ use std::io::prelude::*;
 use std::time::Instant;
 
 use crate::position::Pos;
+use crate::position::permutation_sign;
 use crate::A_star::A_star;
 
 
@@ -23,15 +24,35 @@ fn read_from_console() -> String {
     s
 }
 
-fn call(start: Pos) -> Vec<Pos> {
-    println!("Camputations started");
+fn call(start: Pos) {
+    let start_sign = permutation_sign(&start.to_permutation());
+    let end = Pos(0xfedcba9876543210);
+    let end_sign = permutation_sign(&end.to_permutation());
+
+    if start == end {
+        println!("Nothing to do");
+        return;
+    }
+
+    if start_sign != end_sign {
+        println!("exists solution and I start finding it");
+    } else {
+        println!("No solution");
+        println!("To proof it I start finding solution of 14-15 game")
+    }
+
     let clock = Instant::now();
+
     let ans = A_star(start);
     let duration = clock.elapsed();
+
     println!("Solve in {:?}", duration);
+    println!("The solution is");
+
     println!("{}", ans.len());
-    println!("{:x?}", ans); 
-    ans
+    for pos in ans {
+        println!("{}", pos);
+    }
 }
 
 fn main() {

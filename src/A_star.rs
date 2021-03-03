@@ -46,8 +46,8 @@ pub fn A_star(start: Pos) -> Vec<Pos> {
 
     let start_sing = permutation_sign(&start.to_permutation());
     let end_sign = permutation_sign(&end.to_permutation());
-    if start_sing == end_sign {
-        end = Pos(0xefdcba9876543210);
+    if start_sing != end_sign {
+        end = Pos(0xfdecba9876543210);
     }
 
     if start == end {

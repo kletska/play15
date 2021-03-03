@@ -1,5 +1,3 @@
-extern crate rand;
-
 mod position;
 mod A_star;
 
@@ -34,7 +32,7 @@ fn call(start: Pos) {
         return;
     }
 
-    if start_sign != end_sign {
+    if start_sign == end_sign {
         println!("exists solution and I start finding it");
     } else {
         println!("No solution");
@@ -55,8 +53,32 @@ fn call(start: Pos) {
     }
 }
 
+/*
+Вот  неплохой сайт
+https://www.onlinegdb.com/online_rust_compiler
+Однако, там не хватает времени для слишом сложных примеров
+Я приведу пару нетривиальных, но не слишком сложных
+Пример ввода:
+8 2 3 7
+1 11 15 4
+5 6 9 10
+12 0 13 14
+Что бы осознать, насколько сайт - слоупок.
+У меня на ноуте 7.6 сек.
+Там: 43.1 сек.
+1 14 3 4 
+5 6 7 8 
+9 11 12 0 
+13 2 10 15
+У меня 0.28 сек.
+У них 0.76 сек.
+*/
+
+
+
 fn main() {
     let s = read_from_console(); 
     let pos = Pos::from_string(s);
     call(pos);
 }
+

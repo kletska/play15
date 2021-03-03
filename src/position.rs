@@ -62,7 +62,7 @@ impl Pos {
         let mut res = Vec::new();
         for i in 0..16 {
             let val = (self.0 >> (4 * i)) & 15;
-            res.push(val);
+            res.push(if val == 15 { 0 } else { val + 1 });
         }
         res
     }
@@ -164,6 +164,9 @@ pub fn permutation_sign(perm: &Vec<u64>) -> usize {
             if perm[i] > perm[j] {
                 cnt += 1;
             }
+        }
+        if perm[i] == 0 {
+            cnt += i / 4;
         }
     }
     cnt % 2

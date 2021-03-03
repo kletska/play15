@@ -320,7 +320,7 @@ fn call(start: Pos) {
     println!("Solve in {:?}", duration);
     println!("The solution is");
 
-    println!("Решение за {} ходов", ans.len() - 1);
+    println!("This solution need {} steps", ans.len() - 1);
     for pos in ans {
         println!("{}", pos);
     }

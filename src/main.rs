@@ -47,7 +47,7 @@ fn call(start: Pos) {
     println!("Solve in {:?}", duration);
     println!("The solution is");
 
-    println!("{}", ans.len());
+    println!("This solution need {} steps", ans.len() - 1);
     for pos in ans {
         println!("{}", pos);
     }
